@@ -5,13 +5,14 @@ function App() {
   const [input, setInput] = useState("");
   const [inputVal, setInputVal] = useState(-1);
   const [primeFactorization, setPrimeFactorization] = useState("");
+  const [isReady, setIsReady] = useState(window.__MathJax_State__.isReady);
 
   const smallestPrime = useMemo(() => {
     const N = 1e7;
     const sm = new Array(N + 1).fill(0);
     for (let p = 2; p <= N; p++) {
       if (sm[p]) continue;
-      for (let k = p; k <= N; k += p) sm[k] = p;
+      for (let k = p; k <= N; k += p) if (!sm[k]) sm[k] = p;
     }
     return sm;
   }, []);
@@ -49,18 +50,23 @@ function App() {
   useEffect(() => {
     if (!primeFactorization) {
       setPrimeFactorization(() => "Prime factorization appears here");
+      return;
     }
-    if (window.MathJax && window.MathJax.typeset) {
-      console.log("typeset successful");
-      window.MathJax.typeset();
+    if (!isReady) {
+      window.__MathJax_State__.promise.then(() => {
+        console.log("MathJax Loaded");
+        setIsReady(true);
+      });
+      return;
     }
-  }, [primeFactorization]);
+    window.MathJax.typeset();
+  }, [isReady, primeFactorization]);
 
   return (
     <div className={styles.App}>
       <input
         onChange={(e) => {
-          if (isNaN(e.target.value)) return false;
+          if (isNaN(Number(e.target.value))) return false;
           const newValue = e.target.value ? parseInt(e.target.value) : -1;
           if (newValue <= 1e7 && newValue !== inputVal) {
             setInput(e.target.value);
