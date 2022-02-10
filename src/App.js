@@ -51,6 +51,7 @@ function App() {
       setPrimeFactorization(() => "Prime factorization appears here");
     }
     if (window.MathJax && window.MathJax.typeset) {
+      console.log("typeset successful");
       window.MathJax.typeset();
     }
   }, [primeFactorization]);
