@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./App.module.css";
 
 function App() {
@@ -6,6 +6,8 @@ function App() {
   const [inputVal, setInputVal] = useState(-1);
   const [primeFactorization, setPrimeFactorization] = useState("");
   const [isReady, setIsReady] = useState(window.__MathJax_State__.isReady);
+  const rendererRef = useRef();
+  const factorizationRef = useRef();
 
   const smallestPrime = useMemo(() => {
     const N = 1e7;
@@ -59,7 +61,9 @@ function App() {
       });
       return;
     }
-    window.MathJax.typeset();
+    window.MathJax.typesetPromise([rendererRef.current]).then(() => {
+      factorizationRef.current.innerHTML = rendererRef.current.innerHTML;
+    });
   }, [isReady, primeFactorization]);
 
   return (
@@ -77,7 +81,10 @@ function App() {
         placeholder={"Enter a number"}
         value={input}
       />
-      <div className={styles.primeFactorization}>{primeFactorization}</div>
+      <div className={styles.primeFactorization} ref={factorizationRef} />
+      <div className={styles.renderer} ref={rendererRef}>
+        {primeFactorization}
+      </div>
     </div>
   );
 }
