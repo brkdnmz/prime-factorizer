@@ -41,7 +41,7 @@ function App() {
     }
     for (let i = 0; i < primes.length; i++) {
       newFactorization += primes[i] + "^{" + powerOf[primes[i]] + "}";
-      if (i + 1 < primes.length) newFactorization += "\\cdot ";
+      if (i + 1 < primes.length) newFactorization += " \\cdot ";
     }
     newFactorization += "$";
     setPrimeFactorization(() => newFactorization);
